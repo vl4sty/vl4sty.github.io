@@ -1,7 +1,181 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fireworks Animation with Trails and Explosions</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .center {
+            /*position: absolute;*/
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 25%;
+        }
+    </style>
+</head>
 <body>
-<h1>UNDER CONSTRUCTION</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <h1>UNDER CONSTRUCTION</h1>
+    <p>I'm hosted with GitHub Pages.</p>
+    <canvas id="fireworksCanvas"></canvas>
+    <img src="https://64.media.tumblr.com/f0da7c50d726e64c6c0d8a985240b6f4/dfbbb68a95adf2d4-ce/s250x400/afe73dd5883647200c53408018ed3be99b567b80.gif" alt="work" class="center">
+    <script>
+  const canvas = document.getElementById('fireworksCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let fireworks = [];
+
+  class Firework {
+    constructor(x, y, targetY, color) {
+      this.x = x;
+      this.y = y;
+      this.targetY = targetY;
+      const colors = ["rgb(64, 226, 160)", "rgb(255, 102, 102)", "rgb(124, 178, 232)", "rgb(255, 105, 248)"];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.particles = [];
+      this.exploded = false;
+
+      const minAngle = 2;
+      const maxAngle = 1;
+      const angle = Math.random() * (maxAngle - minAngle) + minAngle;
+      //const angle = 2;
+      const speed = 5;
+      this.velocity = {
+            x: Math.cos(angle) * speed,
+            y: -Math.sin(angle) * speed
+      };
+    }
+
+    explode() {
+      for (let i = 0; i < 100; i++) {
+        const angle = Math.random() * Math.PI * 10;
+        const speed = Math.random() * 4 + 0.5;
+        this.particles.push(new Particle(this.x, this.y, this.color, {
+          x: Math.cos(angle) * speed,
+          y: Math.sin(angle) * speed
+        }));
+      }
+      this.exploded = true;
+    }
+
+    update() {
+      if (!this.exploded) {
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+
+        if (this.y <= this.targetY) {
+          this.explode();
+        }
+      }
+
+      this.particles.forEach(particle => particle.update());
+      this.particles = this.particles.filter(particle => particle.alpha > 0);
+    }
+
+    draw() {
+      if (!this.exploded) {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 3, 0, Math.PI * 3);
+        ctx.fill();
+      }
+
+      this.particles.forEach(particle => particle.draw());
+    }
+  }
+
+  class Particle {
+    constructor(x, y, color, velocity) {
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.velocity = velocity;
+      this.alpha = 1;
+      this.friction = 1;
+      this.gravity = 0.025;
+    }
+
+    update() {
+      this.velocity.x *= this.friction;
+      this.velocity.y *= this.friction;
+      this.velocity.y += this.gravity;
+      this.x += this.velocity.x;
+      this.y += this.velocity.y;
+      this.alpha -= 0.005;
+    }
+
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = this.color;
+      //ctx.beginPath();
+      //ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+      //ctx.fillRect(this.x, this.y, 100, 100);
+      //ctx.clearRect(this.x, this.y, 60, 60);
+      if (this.color == "rgb(124, 178, 232)") {
+            ctx.font = "48px arial";
+            ctx.fillText("✕", this.x, this.y, 100, 100); //◻△✕○
+        }
+      if (this.color == "rgb(255, 102, 102)") {
+            ctx.font = "64px arial";
+            ctx.fillText("○", this.x, this.y, 100, 100); //◻△✕○
+        }
+      if (this.color == "rgb(255, 105, 248)") {
+            ctx.font = "48px arial";
+            ctx.fillText("◻", this.x, this.y, 100, 100); //◻△✕○
+        }
+      if (this.color == "rgb(64, 226, 160)") {
+            ctx.font = "48px arial";
+            ctx.fillText("△", this.x, this.y, 100, 100); //◻△✕○
+        }
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    fireworks.forEach((firework, index) => {
+      firework.update();
+      firework.draw();
+      if (firework.exploded && firework.particles.length === 0) {
+        fireworks.splice(index, 1);
+      }
+    });
+  }
+  const maxfire = 3
+  function spawnFireworks() {
+      if (fireworks.length < maxfire) {
+          const x = Math.random() * canvas.width;
+          const y = canvas.height;
+          const targetY = Math.random() * canvas.height / 2;
+          fireworks.push(new Firework(x, y, targetY));
+      }
+  }
+    /*const x = Math.random() * canvas.width;
+    const y = canvas.height;
+    const targetY = Math.random() * canvas.height / 2;
+    const color = ["rgb(64, 226, 160)", "rgb(255, 102, 102)", "rgb(124, 178, 232)", "rgb(255, 105, 248)"];
+    fireworks.push(new Firework(x, y, targetY, color));
+  }*/
+
+  animate();
+  setInterval(spawnFireworks, 1000);
+    </script>
 </body>
 </html>
