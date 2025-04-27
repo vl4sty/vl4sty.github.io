@@ -6,6 +6,7 @@ html {
     padding: 0;
     height: 100%;
     font-family: "Exo 2", sans-serif;
+    background-color: rgb(0, 0, 0);
     color: white;
     background-image: url("../img/back.jpg");
     background-position: center;
@@ -34,6 +35,17 @@ nav {
     margin: auto;
     padding: 10px;
     z-index: 1;
+}
+
+nav>h1 {
+    margin-right: 10px;
+}
+
+#separator {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    height: 48px;
+    margin-right: 10px;
 }
 
 .navlink {
@@ -145,5 +157,5 @@ footer {
     min-height: 5vh;
     padding: 1rem;
     z-index: 1;
-    box-shadow: 0px 0px 20px 20px rgba(0,0,0,1);
+    box-shadow: 0px 0px 20px 20px rgba(0, 0, 0, 1);
 }
