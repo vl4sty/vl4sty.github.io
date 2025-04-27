@@ -1,18 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("fireworksCanvas");
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    const icons = {
+        webico1: new Image(),
+        webico2: new Image(),
+        webico3: new Image(),
+    };
+    icons.webico1.src = "web/img/webico/webico1.PNG";
+    icons.webico2.src = "web/img/webico/webico2.PNG";
+    icons.webico3.src = "web/img/webico/webico3.PNG";
+
     const colors = [
-        "rgb(64, 226, 160)",   // △
-        "rgb(255, 102, 102)",  // ○
-        "rgb(124, 178, 232)",  // ✕
-        "rgb(255, 105, 248)"   // ◻
+        "rgb(27, 46, 148)",
+        "rgb(108, 25, 134)",
+        "rgb(209, 47, 55)",
     ];
 
     let fireworks = [];
-    const MAX_FIRE = 3;
+    const MAX_FIRE = 2;
 
     class Particle {
         constructor(x, y, color, velocity) {
@@ -22,6 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
             this.alpha = 1;
             this.friction = 1;
             this.gravity = 0.025;
+            if (color === "rgb(27, 46, 148)") this.img = icons.webico1;
+            else if (color === "rgb(108, 25, 134)") this.img = icons.webico2;
+            else if (color === "rgb(209, 47, 55)") this.img = icons.webico3;
         }
 
         update() {
@@ -36,25 +47,14 @@ document.addEventListener("DOMContentLoaded", function () {
         draw() {
             ctx.save();
             ctx.globalAlpha = this.alpha;
-            ctx.fillStyle = this.color;
-            //i will draw pictures, this is just temporary
-            if (this.color === "rgb(124, 178, 232)") {
-                ctx.font = "48px Arial";
-                ctx.fillText("✕", this.x, this.y);
-            }
-            else if (this.color === "rgb(255, 102, 102)") {
-                ctx.font = "64px Arial";
-                ctx.fillText("○", this.x, this.y);
-            }
-            else if (this.color === "rgb(255, 105, 248)") {
-                ctx.font = "48px Arial";
-                ctx.fillText("◻", this.x, this.y);
-            }
-            else if (this.color === "rgb(64, 226, 160)") {
-                ctx.font = "48px Arial";
-                ctx.fillText("△", this.x, this.y);
-            }
-
+            const size = 64;
+            ctx.drawImage(
+                this.img,
+                this.x - size / 2,
+                this.y - size / 2,
+                size,
+                size
+            );
             ctx.restore();
         }
     }
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         explode() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 50; i++) {
                 const ang = Math.random() * Math.PI * 2;
                 const spd = Math.random() * 4 + 0.5;
                 this.particles.push(new Particle(
